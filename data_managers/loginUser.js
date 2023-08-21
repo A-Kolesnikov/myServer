@@ -1,4 +1,6 @@
 const mysql = require('mysql2');
+const cookieParser = require('cookie-parser')
+const jwt = require('jsonwebtoken') //npm i jsonwebtoken
 
 const connection = mysql.createConnection({
     host: 'localhost',

@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+const cookieParser = require('cookie-parser')
+const jwt = require('jsonwebtoken') //npm i jsonwebtoken
 
 const getUsers = require('../data_managers/getUsers')
 const getUser = require('../data_managers/getUser')
@@ -10,7 +12,32 @@ const registerUser = require('../data_managers/registerUser')
 
 router.use(express.json())
 
-router.get('/', async function (req, res, next) {
+const verifyUser = (req, res, next) => {
+  const token = req.cookies.token
+  if(!token){
+    return res.json({failure: "You are guest"})
+  } else {
+    jwt.verify(token, "some-secret-key", (err, decoded) => {
+      if (err){
+        return {failure: "Token is not OK"}
+      } else {
+        req.dBanswer = decoded.dBanswer
+        next()
+      }
+    })
+  }
+}
+
+router.get('/currentUser', verifyUser, (req, res) => {
+  res.json(req.dBanswer);
+})
+
+router.get('/logout', (req, res) => {
+  res.clearCookie('token')
+  return res.json({success: "Yes"})
+})
+
+router.get('/all', async function (req, res, next) {
   try {
     const users = await getUsers()
     res.json(users)
@@ -26,7 +53,7 @@ router.get('/:id', async function (req, res, next) {
   res.json(user)
 })
 
-router.post('/', async function (req, res, next) {
+router.post('/', async function (req, res, next) { //just to test POST REQUEST
   try {
     // Assuming you have a data_manager function to add a new user
     const newUser = req.body; // You need to implement this
@@ -47,9 +74,19 @@ router.post('/login', async function (req, res, next) {
     if (!dBanswer){
       answer = {failure: "no such user"}
     } else {
-      dBanswer.password == loginAttempt.password ? answer = dBanswer : answer = {failure: "wrong password"}
+      //dBanswer.password == loginAttempt.password ? answer = dBanswer : answer = {failure: "wrong password"}
+      if(dBanswer.password == loginAttempt.password){
+        answer = {success: "Yes", name: dBanswer.name}//dBanswer
+        const token = jwt.sign(
+          {dBanswer},
+          "some-secret-key",
+          {expiresIn: "1d"})
+        res.cookie('token', token)
+      } else {
+        answer = {failure: "wrong password"}
+      }
     }
-    res.status(201).json(answer)
+    return res.status(201).json(answer)
   } catch (error) {
     res.status(500).json({ error: "an error happened" })
   }

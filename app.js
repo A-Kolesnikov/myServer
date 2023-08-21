@@ -1,7 +1,6 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
-var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
@@ -11,8 +10,16 @@ var ordersRouter = require('./routes/orders');
 
 const cors = require('cors')
 
+const jwt = require('jsonwebtoken') //npm i jsonwebtoken
+const bcrypt = require('bcrypt')  //npm i bcrpt
+const cookieParser = require('cookie-parser')
+
 var app = express();
-app.use(cors())
+app.use(cors({
+  origin: ["http://localhost:3000"],
+  methods: ["POST", "GET"],
+  credentials: true
+}))
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
