@@ -77,7 +77,7 @@ router.post('/login', async function (req, res, next) {
       //dBanswer.password == loginAttempt.password ? answer = dBanswer : answer = {failure: "wrong password"}
       if(dBanswer.password == loginAttempt.password){
         answer = {success: "Yes", name: dBanswer.name}//dBanswer
-        const token = jwt.sign(
+        const token = jwt.sign(/*dBanswer*/
           {dBanswer},
           "some-secret-key",
           {expiresIn: "1d"})
