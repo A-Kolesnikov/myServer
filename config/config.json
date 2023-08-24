@@ -1,0 +1,14 @@
+
+{   
+    "To-Use-Config": "npm install config",
+    "dbSettings":{
+        "host": "localhost",
+        "port": 3306,
+        "user": "root",
+        "password": "4133",
+        "database": "gps-store"
+    },
+    "jwtSettings": {
+        "codePhrase": "some-secret-key"
+    }
+}
