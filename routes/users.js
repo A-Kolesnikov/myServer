@@ -12,12 +12,10 @@ const setPasswordByEmail = require('../data_managers/setPasswordByEmail')
 
 const jwtSecretWord = "some-secret-key"
 
-/* GET users listing. */
-
 router.use(express.json())
 
 const verifyUser = (req, res, next) => {
-  const token = req.cookies.token
+  const token = req.cookies.user_token
   if (!token) {
     return res.json({ failure: "You are guest" })
   } else {
@@ -25,7 +23,7 @@ const verifyUser = (req, res, next) => {
       if (err) {
         return { failure: "Token is not OK" }
       } else {
-        req.dBanswer = decoded.dBanswer
+        req.decodedUser = decoded.userOfSession  //Assign the decodedUser to the request object to pass it through next(). Сan make a request to database here and create more detailed user if needed
         next()
       }
     })
@@ -33,11 +31,11 @@ const verifyUser = (req, res, next) => {
 }
 
 router.get('/currentUser', verifyUser, (req, res) => {
-  res.json(req.dBanswer);
+  return res.json(req.decodedUser);
 })
 
 router.get('/logout', (req, res) => {
-  res.clearCookie('token')
+  res.clearCookie('user_token')
   return res.json({ success: "Yes" })
 })
 
@@ -48,13 +46,12 @@ router.post('/forgot-password', async function (req, res, next) {
     if (usersFromDB.length === 0) {
       return res.json({ failure: "No such user to reset" })
     } else {
-
       const uniqueSecretWord = jwtSecretWord + usersFromDB[0].password + usersFromDB[0].email //generate keyphrase which wont match with other users, having same password or this user, resetting other password
       const payload = { id: usersFromDB[0].id, email: usersFromDB[0].email }
       const token = jwt.sign(
         payload,
         uniqueSecretWord,
-        { expiresIn: "1d" })
+        { expiresIn: "2m" })
 
       const link = `http://localhost:3000/reset-password/${usersFromDB[0].email}/${token}`
       return res.status(201).json({ success: link }) //here would be message by email
@@ -65,10 +62,11 @@ router.post('/forgot-password', async function (req, res, next) {
 })
 
 router.post('/reset-password', async function (req, res, next) {
-  //const { email } = req.params  /we mayt pass data here either in params or in POST request body
+  //const { email } = req.params  /we may pass data here either in params or in POST request body
   const email = req.body.requestingEmail
   const token = req.body.uniqueToken
   const newPassword = req.body.newPassword
+
   try {
     const usersFromDB = await getUserByEmail(email)
     if (usersFromDB.length === 0) {
@@ -85,12 +83,12 @@ router.post('/reset-password', async function (req, res, next) {
         }
       })
     }
-
   } catch (error) {
     res.status(500).json({ error: "an error happened" })
   }
 })
 
+//FOR DEBUGGING ONLY
 router.get('/all', async function (req, res, next) {
   try {
     const users = await getUsers()
@@ -101,13 +99,15 @@ router.get('/all', async function (req, res, next) {
   //res.send('Here would be users');
 });
 
+//FOR DEBUGGING ONLY
 router.get('/:id', async function (req, res, next) {
   const id = req.params.id
   const user = await getUser(id)
   res.json(user)
 })
 
-router.post('/', async function (req, res, next) { //just to test POST REQUEST
+//FOR DEBUGGING ONLY
+router.post('/', async function (req, res, next) {
   try {
     // Assuming you have a data_manager function to add a new user
     const newUser = req.body; // You need to implement this
@@ -120,22 +120,26 @@ router.post('/', async function (req, res, next) { //just to test POST REQUEST
 
 router.post('/login', async function (req, res, next) {
   try {
-    const loginAttempt = req.body
-    console.log(loginAttempt)
-    const dBanswer = await loginUser(loginAttempt.email, loginAttempt.password)
-    console.log(dBanswer)
+    const loginAttempt = req.body //format {email, password}
+    const userFromDB = await loginUser(loginAttempt.email, loginAttempt.password)
     let answer = ''
-    if (!dBanswer) {
+    if (!userFromDB) {
       answer = { failure: "no such user" }
     } else {
-      //dBanswer.password == loginAttempt.password ? answer = dBanswer : answer = {failure: "wrong password"}
-      if (dBanswer.password == loginAttempt.password) {
-        answer = { success: "Yes", name: dBanswer.name }//dBanswer
-        const token = jwt.sign(/*dBanswer*/
-          { dBanswer },
+      if (userFromDB.password == loginAttempt.password) {
+        const userOfSession = {
+          id: userFromDB.id,
+          name: userFromDB.name,
+          email: userFromDB.email,
+          is_admin: userFromDB.is_admin
+        }
+        answer = { success: `user ${userOfSession.email} identified`} //FOR DEBUGGING - will be replaced with plain status
+        console.log(userOfSession)
+        const token = jwt.sign(
+          {userOfSession},
           jwtSecretWord,
-          { expiresIn: "1d" })
-        res.cookie('token', token)
+          {expiresIn: "1d"})
+        res.cookie('user_token', token)
       } else {
         answer = { failure: "wrong password" }
       }
