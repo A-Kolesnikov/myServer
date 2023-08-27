@@ -11,12 +11,8 @@ const connection = mysql.createConnection({
 async function getUserByEmail(email) {
     try {
         const result = await new Promise((resolve, reject) => {
-            connection.query(
-                `SELECT * 
-            FROM users
-            WHERE email = ?
-            `, [email],
-                function (err, results, fields) {
+            const sqlQuery = `SELECT * FROM users WHERE email = ?`
+            connection.query(sqlQuery, [email], function (err, results, fields) {
                     if (err) {
                         console.error('Error fetching user:', err);
                         reject(err);
@@ -25,7 +21,7 @@ async function getUserByEmail(email) {
                     resolve(results);
                 });
         })
-        return result;
+        return result[0];
     } catch (erorr) {
         throw erorr
     }

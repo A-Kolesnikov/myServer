@@ -1,18 +1,19 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
-var logger = require('morgan');
+var logger = require('morgan')
+
+const cors = require('cors')
+const jwt = require('jsonwebtoken') //npm i jsonwebtoken
+const bcrypt = require('bcrypt')  //npm i bcrpt
+const cookieParser = require('cookie-parser') //an alternative to jwt?
+const session = require('express-session') //npm install express-session
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var productsRouter = require('./routes/products');
 var ordersRouter = require('./routes/orders');
-
-const cors = require('cors')
-
-const jwt = require('jsonwebtoken') //npm i jsonwebtoken
-const bcrypt = require('bcrypt')  //npm i bcrpt
-const cookieParser = require('cookie-parser')
+const counterRouter = require('./routes/counter')
 
 var app = express();
 app.use(cors({
@@ -31,10 +32,18 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(session({
+  secret: 'my-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {maxAge: 2*60*1000} //in miliseconds
+}))
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/orders', ordersRouter);
 app.use('/products', productsRouter);
+app.use('/counter', counterRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
