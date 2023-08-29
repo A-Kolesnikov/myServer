@@ -1,11 +1,12 @@
 const mysql = require('mysql2');
+const conf = require('../config/configData')
 
 const connection = mysql.createConnection({
-    host: 'localhost',
-    port: 3306,
-    user: 'root',
-    password: '4133',
-    database: 'gps-store'
+    host: conf.dbSettings.host,
+    port: conf.dbSettings.port,
+    user: conf.dbSettings.user,
+    password: conf.dbSettings.password,
+    database: conf.dbSettings.database
 });
 
 async function getUserByEmail(email) {
