@@ -1,3 +1,4 @@
+//npx nodemon to start
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -60,5 +61,7 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+console.log(`Server is up and running`)
 
 module.exports = app;
