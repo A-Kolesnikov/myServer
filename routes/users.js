@@ -79,7 +79,7 @@ router.post('/login', async function (req, res, next) {
           { userOfSession },
           jwtSecretWord,
           { expiresIn: user_tokenLifetime })
-        //const token = createUser_token(userFromDB) // WARNING! Works in register, but not here WHYYY?!?!
+        //const token = createUser_token(userFromDB) // WARNING! Works in .post/register, but not here WHYYY?!?!
         res.clearCookie('connect.sid')
         res.cookie('user_token', token)
         answer = { success: `user ${userOfSession.email} identified` } //FOR DEBUGGING - will be replaced with res.(status).json(...)

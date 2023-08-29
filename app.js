@@ -8,7 +8,10 @@ const cors = require('cors')
 const jwt = require('jsonwebtoken') //npm i jsonwebtoken
 const bcrypt = require('bcrypt')  //npm i bcrpt
 const cookieParser = require('cookie-parser') //an alternative to jwt?
-const session = require('express-session') //npm install express-session
+const session = require('express-session') //npm i express-session
+const dotenv = require('dotenv')  //npm i dotenv
+dotenv.config()
+const config = require('config')  //npm i config
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -63,5 +66,7 @@ app.use(function(err, req, res, next) {
 });
 
 console.log(`Server is up and running`)
+/*console.log(conf.dbSettings.database)
+console.log(conf.dbSettings.password)*/
 
 module.exports = app;
