@@ -14,13 +14,13 @@ async function getUserByEmail(email) {
         const result = await new Promise((resolve, reject) => {
             const sqlQuery = `SELECT * FROM users WHERE email = ?`
             connection.query(sqlQuery, [email], function (err, results, fields) {
-                    if (err) {
-                        console.error('Error fetching user:', err);
-                        reject(err);
-                        return;
-                    }
-                    resolve(results);
-                });
+                if (err) {
+                    console.error('Error fetching user:', err);
+                    reject(err);
+                    return;
+                }
+                resolve(results);
+            });
         })
         return result[0];
     } catch (erorr) {
