@@ -3,7 +3,7 @@ var router = express.Router();
 
 const getProducts = require('../data_managers/getProducts')
 const getProduct = require('../data_managers/getProduct')
-const {getCategoryByID} = require('../data_managers/categoriesManager')
+const {getCategoryByID, addCategory} = require('../data_managers/categoriesManager')
 
 /* GET products listing. */
 router.get('/', async function (req, res, next) {
@@ -25,6 +25,12 @@ router.get('/categories/:id', async function (req, res, next) {
     const id = req.params.id
     const category = await getCategoryByID(id)
     res.status(200).json(category)
+})
+
+router.post('/categories/add', async function (req, res, next) {
+    const newCategoryData = req.body // format {name, parentID, parentHierarchy?}
+    const answer = await addCategory(newCategoryData)
+    res.status(200).json(answer)
 })
 
 module.exports = router;
