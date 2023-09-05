@@ -7,6 +7,12 @@ module.exports = {
         database: 'gps-store'
     },
     jwtSettings: {
-        codePhrase: "some-secret-key"
+        codePhrase: process.env.JWT_SECRET
+    },
+    sessionSettings: {
+        codephrase: process.env.SESSION_SECRET
+    },
+    clientSettings: {
+        url: "http://localhost:3000"
     }
 }

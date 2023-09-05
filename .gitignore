@@ -1,3 +1,5 @@
+#/config    #Should add either config folder or better .env to gitignore
+.env
 # Logs
 logs
 *.log
