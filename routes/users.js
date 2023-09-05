@@ -79,7 +79,7 @@ router.post('/login', async function (req, res, next) {
           { userOfSession },
           jwtSecretWord,
           { expiresIn: user_tokenLifetime })
-        //const token = createUser_token(userFromDB) // WARNING! Works in .post/register, but not here WHYYY?!?!
+        //const token = createUser_token(userFromDB) // WARNING! Works in .post/register, but not here WHY?!?!
         res.clearCookie('connect.sid')
         res.cookie('user_token', token)
         answer = { success: `user ${userOfSession.email} identified` } //FOR DEBUGGING - will be replaced with res.(status).json(...)
@@ -112,10 +112,13 @@ router.post('/register', async function (req, res, next) {
   }
 })
 
-router.get('/logout', (req, res) => {
-  res.clearCookie('user_token')
-  res.clearCookie('connect.sid')
-  return res.json({ success: "Yes" })
+router.get('/logout', (req, res) => { 
+  req.session.destroy((err) => {    // Important to destroy sessions, not only delete tokens
+    if(err) return res.status(500).json({failure: "Can't logout right now"})
+    
+    res.clearCookie('user_token')
+    return res.json({ success: "Yes" })
+  })
 })
 
 router.post('/forgot-password', async function (req, res, next) {

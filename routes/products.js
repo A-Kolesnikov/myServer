@@ -8,8 +8,8 @@ const {getCategoryByID, addCategory} = require('../data_managers/categoriesManag
 /* GET products listing. */
 router.get('/', async function (req, res, next) {
     try {
-        const products = await getProducts();
-        res.json(products); 
+        const products = await getProducts()
+        res.status(200).json(products)
     } catch (error) {
         res.status(500).json({ error: "an error happened" })
     }

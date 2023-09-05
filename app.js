@@ -1,4 +1,9 @@
 //npx nodemon to start
+const dotenv = require('dotenv')  //npm i dotenv - Should be on the top
+dotenv.config()
+const config = require('config')  //npm i config
+const conf = require('./config/configData')
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -9,9 +14,7 @@ const jwt = require('jsonwebtoken') //npm i jsonwebtoken
 const bcrypt = require('bcrypt')  //npm i bcrpt
 const cookieParser = require('cookie-parser') //an alternative to jwt?
 const session = require('express-session') //npm i express-session
-const dotenv = require('dotenv')  //npm i dotenv
-dotenv.config()
-const config = require('config')  //npm i config
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -21,7 +24,7 @@ const counterRouter = require('./routes/counter')
 
 var app = express();
 app.use(cors({
-  origin: ["http://localhost:3000"],
+  origin: [conf.clientSettings.url], //"http://localhost:3000"
   methods: ["POST", "GET"],
   credentials: true
 }))
@@ -30,17 +33,17 @@ app.use(cors({
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-app.use(logger('dev'));
+app.use(logger(process.env.LOG_EVEL || 'dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
-  secret: 'my-secret-key',
+  secret: conf.sessionSettings.codephrase,
   resave: false,
   saveUninitialized: false,
-  cookie: {maxAge: 2*60*1000} //in miliseconds
+  cookie: {maxAge: 2*60*1000} //in milliseconds
 }))
 
 app.use('/', indexRouter);
@@ -66,7 +69,5 @@ app.use(function(err, req, res, next) {
 });
 
 console.log(`Server is up and running`)
-/*console.log(conf.dbSettings.database)
-console.log(conf.dbSettings.password)*/
 
 module.exports = app;
