@@ -68,28 +68,17 @@ router.post('/login', async function (req, res, next) {
       answer = { failure: "no such user" }
     } else {
       if (userFromDB.password === loginAttempt.password) {
-        //adding necessary user data, to put in token
-        const userOfSession = {
-          id: userFromDB.id,
-          name: userFromDB.name,
-          email: userFromDB.email,
-          is_admin: userFromDB.is_admin
-        }
-        const token = jwt.sign(
-          { userOfSession },
-          jwtSecretWord,
-          { expiresIn: user_tokenLifetime })
-        //const token = createUser_token(userFromDB) // WARNING! Works in .post/register, but not here WHY?!?!
+        const token = createUser_token(userFromDB)
         res.clearCookie('connect.sid')
         res.cookie('user_token', token)
-        answer = { success: `user ${userOfSession.email} identified` } //FOR DEBUGGING - will be replaced with res.(status).json(...)
+        answer = { success: `user ${userFromDB.email} identified` } //FOR DEBUGGING - will be replaced with res.(status).json(...)
       } else {
         answer = { failure: "wrong password" } //FOR DEBUGGING - will be replaced with res.(status).json(...)
       }
     }
     res.status(201).json(answer)
   } catch (error) {
-    res.status(500).json({ error: "an error happened" })
+    res.status(500).json({ error: error })
   }
 })
 
