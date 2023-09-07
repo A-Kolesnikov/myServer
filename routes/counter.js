@@ -6,7 +6,6 @@ router.get('/', (req, res) => {
         const counter = {counts: req.session.numberOfCounts};
         return res.status(200).json(counter); 
         //res.status(500).json({ error: "an error happened" })
-
 });
 
 
