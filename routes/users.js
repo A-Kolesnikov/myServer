@@ -2,16 +2,20 @@ var express = require('express');
 var router = express.Router();
 const jwt = require('jsonwebtoken')
 
-const getUsers = require('../data_managers/getUsers')
-const getUser = require('../data_managers/getUser')
-const getUserByEmail = require('../data_managers/getUserByEmail')
-const registerUser = require('../data_managers/registerUser')
-const setPasswordByEmail = require('../data_managers/setPasswordByEmail')
+const conf = require('../config/configData')
 
-const jwtSecretWord = "some-secret-key"
+const {
+  getUser,
+  getUsers,
+  getUserByEmail,
+  registerUser,
+  setPasswordByEmail
+} = require('../data_managers/usersManager')
+
+const jwtSecretWord = conf.jwtSettings.codePhrase
 const user_tokenLifetime = "1d"
 const resetLinkLifetime = "30m"
-const clientUrl = "http://localhost:3000" //to send clear session cookie request
+const clientUrl = conf.clientSettings.url
 
 router.use(express.json())
 
@@ -26,7 +30,6 @@ function createUser_token(userObject) {
     { userOfSession },
     jwtSecretWord,
     { expiresIn: user_tokenLifetime })
-    console.log(userOfSession, token)
   return token
 }
 
