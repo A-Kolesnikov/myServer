@@ -11,7 +11,6 @@ async function getCategories() {
             const sqlQuery = `SELECT * FROM categories`
             connection.query(sqlQuery, function (err, results, fields) {
                 if (err) {
-                    console.error('Error fetching category:', err)
                     reject(err)
                     return
                 }

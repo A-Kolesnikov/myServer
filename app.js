@@ -15,11 +15,12 @@ const bcrypt = require('bcrypt')  //npm i bcrpt
 const cookieParser = require('cookie-parser') //an alternative to jwt?
 const session = require('express-session') //npm i express-sessio
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var productsRouter = require('./routes/products');
-var ordersRouter = require('./routes/orders');
-const counterRouter = require('./routes/counter')
+var indexRouter = require('./routes/index')
+var usersRouter = require('./routes/users')
+var productsRouter = require('./routes/products')
+var categoriesRouter = require('./routes/categories')
+var ordersRouter = require('./routes/orders')
+var counterRouter = require('./routes/counter')
 
 var app = express();
 app.use(cors({
@@ -32,24 +33,25 @@ app.use(cors({
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-app.use(logger(process.env.LOG_EVEL || 'dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(logger(process.env.LOG_EVEL || 'dev'))
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+app.use(cookieParser())
+app.use(express.static(path.join(__dirname, 'public')))
 
 app.use(session({
   secret: conf.sessionSettings.codephrase,
   resave: false,
   saveUninitialized: false,
-  cookie: {maxAge: 2*60*1000} //in milliseconds
+  cookie: {maxAge: 2*60*1000} //in milliseconds //if maxAge == null - will be deleted with closing browser
 }))
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/orders', ordersRouter);
-app.use('/products', productsRouter);
-app.use('/counter', counterRouter);
+app.use('/', indexRouter)
+app.use('/users', usersRouter)
+app.use('/orders', ordersRouter)
+app.use('/products', productsRouter)
+app.use('/categories', categoriesRouter)
+app.use('/counter', counterRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
