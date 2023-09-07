@@ -13,8 +13,7 @@ const cors = require('cors')
 const jwt = require('jsonwebtoken') //npm i jsonwebtoken
 const bcrypt = require('bcrypt')  //npm i bcrpt
 const cookieParser = require('cookie-parser') //an alternative to jwt?
-const session = require('express-session') //npm i express-session
-
+const session = require('express-session') //npm i express-sessio
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -24,7 +23,7 @@ const counterRouter = require('./routes/counter')
 
 var app = express();
 app.use(cors({
-  origin: [conf.clientSettings.url], //"http://localhost:3000"
+  origin: [conf.clientSettings.url],
   methods: ["POST", "GET"],
   credentials: true
 }))

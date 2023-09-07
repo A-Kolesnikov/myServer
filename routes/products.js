@@ -1,11 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-const getProducts = require('../data_managers/getProducts')
-const getProduct = require('../data_managers/getProduct')
 const {getCategoryByID, addCategory} = require('../data_managers/categoriesManager')
+const {getProduct, getProducts} = require('../data_managers/productsManager')
 
-/* GET products listing. */
 router.get('/', async function (req, res, next) {
     try {
         const products = await getProducts()

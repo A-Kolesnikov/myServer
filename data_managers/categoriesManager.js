@@ -2,12 +2,8 @@ const mysql = require('mysql2');
 const conf = require('../config/configData')
 
 const connection = mysql.createConnection({
-    host: conf.dbSettings.host,
-    port: conf.dbSettings.port,
-    user: conf.dbSettings.user,
-    password: conf.dbSettings.password,
-    database: conf.dbSettings.database
-});
+    ...conf.dbSettings
+})
 
 async function getCategories() {
     try {
@@ -77,13 +73,13 @@ async function addCategory(newCategoryData) {
         })
         if (result.insertId)
         return getCategories() //result
-
     } catch (error) {
         throw error
     }
 }
 
 module.exports = {
+    getCategories,
     getCategoryByID,
     addCategory
 }
