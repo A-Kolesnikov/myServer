@@ -13,8 +13,8 @@ const {
 } = require('../data_managers/usersManager')
 
 const jwtSecretWord = conf.jwtSettings.codePhrase
-const user_tokenLifetime = "1d"
-const resetLinkLifetime = "30m"
+const user_tokenLifetime = conf.jwtSettings.user_tokenLifetime
+const resetLinkLifetime = conf.jwtSettings.resetLinkLifetime
 const clientUrl = conf.clientSettings.url
 
 router.use(express.json())
@@ -71,8 +71,8 @@ router.post('/login', async function (req, res, next) {
       answer = { failure: "no such user" }
     } else {
       if (userFromDB.password === loginAttempt.password) {
-        const token = createUser_token(userFromDB)
         res.clearCookie('connect.sid')
+        const token = createUser_token(userFromDB)
         res.cookie('user_token', token)
         answer = { success: `user ${userFromDB.email} identified` } //FOR DEBUGGING - will be replaced with res.(status).json(...)
       } else {
@@ -89,7 +89,6 @@ router.post('/register', async function (req, res, next) {
   try {
     const registerAttempt = req.body
     const newUserFromDB = await registerUser(registerAttempt.email, registerAttempt.password, registerAttempt.name, registerAttempt.telephone) //can I do {...registerAttempt}?
-    console.log(newUserFromDB)
     let answer = ''
     if (!newUserFromDB) {
       answer = { failure: "User already exists" }

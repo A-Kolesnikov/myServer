@@ -43,7 +43,7 @@ app.use(session({
   secret: conf.sessionSettings.codephrase,
   resave: false,
   saveUninitialized: false,
-  cookie: {maxAge: 2*60*1000} //in milliseconds //if maxAge == null - will be deleted with closing browser
+  cookie: {maxAge: conf.sessionSettings.sessionLifeTime}
 }))
 
 app.use('/', indexRouter)
