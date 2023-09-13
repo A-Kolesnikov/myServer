@@ -3,18 +3,13 @@ var router = express.Router()
 const conf = require('../config/configData')
 
 const {getCategories, getCategoryByID, addCategory} = require('../data_managers/categoriesManager')
+const { getCachedCategories, setCachedCategories} = require('../cache/categoriesCache')
 
 const categoriesLifeTime = conf.cookieSettings.categoriesLifeTime
 
-let cachedCategories = null //  Quasi-static data, updated seldom, only by admin.
-async function initCahcedCategories(){
-    cachedCategories = await getCategories()
-}
-initCahcedCategories()
-
 router.get('/', async function (req, res, next) {   //cookie based category fetching
         try {
-            const categories = cachedCategories//await getCategories()
+            const categories = getCachedCategories()//await getCategories()
             const lifeTime = new Date(Date.now() + categoriesLifeTime)
             return res.status(200).cookie('categories', categories, {expires: lifeTime}).end()
         } catch (error) {
@@ -35,8 +30,9 @@ router.get('/:id', async function (req, res, next) {
 router.post('/add', async function (req, res, next) {
     try{
         const newCategoryData = req.body // format {name, parentID, parentHierarchy?}
+        
         const updatedCategoriesArr = await addCategory(newCategoryData)
-        cachedCategories = updatedCategoriesArr
+        setCachedCategories(updatedCategoriesArr)
         res.status(201).json(updatedCategoriesArr)
     } catch (error) {
         res.status(500).json({ error: error })

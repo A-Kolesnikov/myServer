@@ -15,6 +15,9 @@ const bcrypt = require('bcrypt')  //npm i bcrpt
 const cookieParser = require('cookie-parser') //an alternative to jwt?
 const session = require('express-session') //npm i express-sessio
 
+const {initCachedCategories} = require('./cache/categoriesCache') //initializing cache
+initCachedCategories()
+
 var indexRouter = require('./routes/index')
 var usersRouter = require('./routes/users')
 var productsRouter = require('./routes/products')
