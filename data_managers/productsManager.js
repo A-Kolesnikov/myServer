@@ -1,4 +1,4 @@
-const mysql = require('mysql2');
+const mysql = require('mysql2')
 const conf = require('../config/configData')
 
 const connection = mysql.createConnection({
@@ -29,9 +29,10 @@ async function getProduct(id) {
 
 async function getProducts() {
     try {
+        const sqlQuery = `SELECT * FROM PRODUCTS`
         const results = await new Promise((resolve, reject) => {
             connection.query(
-                'SELECT * FROM PRODUCTS',
+                sqlQuery,
                 function (err, results, fields) {
                     if (err) {
                         console.error('Error fetching products:', err);
@@ -47,7 +48,31 @@ async function getProducts() {
     }
 }
 
+async function getProductsOfCategory(categoriesID) {
+    try {
+        const queryCategories = categoriesID //format 1,2,5
+        const sqlQuery = `SELECT * FROM PRODUCTS WHERE category_id IN (${queryCategories})`
+        const results = await new Promise((resolve, reject) => {
+            connection.query(
+                sqlQuery,
+                //[queryCategories],
+                function (err, results, fields) {
+                    if (err) {
+                        console.error('Error fetching products:', err)
+                        reject(err)
+                        return
+                    }
+                    resolve(results);
+                });
+        })
+        return results;
+    } catch (erorr) {
+        throw erorr
+    }
+}
+
 module.exports = {
     getProduct,
-    getProducts
+    getProducts,
+    getProductsOfCategory
 }
