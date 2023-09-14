@@ -15,7 +15,7 @@ const bcrypt = require('bcrypt')  //npm i bcrpt
 const cookieParser = require('cookie-parser') //an alternative to jwt?
 const session = require('express-session') //npm i express-sessio
 
-const {initCachedCategories} = require('./cache/categoriesCache') //initializing cache
+const { initCachedCategories } = require('./cache/categoriesCache') //initializing cache
 initCachedCategories()
 
 var indexRouter = require('./routes/index')
@@ -46,7 +46,11 @@ app.use(session({
   secret: conf.sessionSettings.codephrase,
   resave: false,
   saveUninitialized: false,
-  cookie: {maxAge: conf.sessionSettings.sessionLifeTime}
+  cookie: {
+    maxAge: conf.sessionSettings.sessionLifeTime/*,
+    sameSite: 'none',
+    secure: true*/
+  }
 }))
 
 app.use('/', indexRouter)
@@ -57,12 +61,12 @@ app.use('/categories', categoriesRouter)
 app.use('/counter', counterRouter)
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
