@@ -35,8 +35,8 @@ function createUser_token(userObject) {
 
 const verifyUser_token = (req, res, next) => {
   const token = req.cookies.user_token
-  if (!token) {
-    return res.json({ failure: "You are guest" })
+  if (!req.cookies.user_token) {
+    return res.json({ failure: "You are guest" }).end()
   } else {
     jwt.verify(token, jwtSecretWord, (err, decoded) => {
       if (err) {
@@ -45,21 +45,20 @@ const verifyUser_token = (req, res, next) => {
         //Assign the decodedUser to the request object to pass it through next()
         //Сan make a request to database here and create more detailed user if needed
         req.decodedUser = decoded.userOfSession
-
         //refresh token lifetime
         const token = jwt.sign(
           { userOfSession: { ...req.decodedUser }, },
           jwtSecretWord,
           { expiresIn: user_tokenLifetime })
-        res.cookie('user_token', token)
-        next()
+        res.cookie('user_token', token).json({ currentUser: req.decodedUser }).end()
+        //next()
       }
     })
   }
 }
 
 router.get('/currentUser', verifyUser_token, (req, res) => {
-  return res.json({ currentUser: req.decodedUser });
+  //return res.json({ currentUser: req.decodedUser });
 })
 
 router.post('/login', async function (req, res, next) {
@@ -104,12 +103,12 @@ router.post('/register', async function (req, res, next) {
 })
 
 router.get('/logout', (req, res) => { 
-  req.session.destroy((err) => {    // Important to destroy sessions, not only delete tokens
-    if(err) return res.status(500).json({failure: "Can't logout right now"})
+  /*req.session.destroy((err) => {    // Important to destroy sessions, not only delete tokens
+    if(err) return res.status(500).json({failure: "Can't logout right now"})*/
     
     res.clearCookie('user_token')
     return res.status(200).json({ success: "Yes" })
-  })
+  /*})*/
 })
 
 router.post('/forgot-password', async function (req, res, next) {
