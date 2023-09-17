@@ -107,6 +107,7 @@ router.get('/logout', (req, res) => {
     if(err) return res.status(500).json({failure: "Can't logout right now"})*/
     
     res.clearCookie('user_token')
+    res.clearCookie('connect.sid')
     return res.status(200).json({ success: "Yes" })
   /*})*/
 })
