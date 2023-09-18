@@ -14,14 +14,14 @@ async function getProduct(id) {
                 [id],
                 function (err, results, fields) {
                     if (err) {
-                        console.error('Error fetching products:', err);
-                        reject(err);
-                        return;
+                        console.error('Error fetching products:', err)
+                        reject(err)
+                        return
                     }
-                    resolve(results);
-                });
+                    resolve(results)
+                })
         })
-        return result[0];
+        return result[0]
     } catch (erorr) {
         throw erorr
     }
