@@ -55,7 +55,66 @@ async function addToCart(user_id, product_id, quantity) {
     }
 }
 
+async function reduceInCart(user_id, product_id, quantity) {
+    try {
+        const sqlQuery =
+            `UPDATE cart_items
+            SET quantity = CASE
+                WHEN quantity - ? >= 1 THEN quantity - ?
+                ELSE 1
+            END
+            WHERE user_id = ? AND product_id = ?;`
+            
+        const result = await new Promise((resolve, reject) => {
+            connection.query(
+                sqlQuery,
+                [quantity, quantity, user_id, product_id],
+                function (err, results) {
+                    if (err) {
+                        console.error(`error fetching cart:`, err)
+                        reject(err)
+                        return
+                    }
+                    resolve(results)
+                }
+            )
+        })
+        if (result)
+        return getCartOfUser(user_id)
+    } catch (error) {
+        throw error
+    }
+}
+
+async function deleteFromCart(user_id, product_id) {
+    try {
+        const sqlQuery =
+            `DELETE FROM cart_items
+            WHERE user_id = ? AND product_id = ?;`
+        const result = await new Promise((resolve, reject) => {
+            connection.query(
+                sqlQuery,
+                [user_id, product_id],
+                function (err, results) {
+                    if (err) {
+                        console.error(`error fetching cart:`, err)
+                        reject(err)
+                        return
+                    }
+                    resolve(results)
+                }
+            )
+        })
+        if (result)
+        return getCartOfUser(user_id)
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     getCartOfUser,
-    addToCart
+    addToCart,
+    reduceInCart,
+    deleteFromCart
 }

@@ -1,7 +1,11 @@
 var express = require('express')
 var router = express.Router()
 
-const {getCartOfUser, addToCart} = require('../data_managers/cartManager')
+const {
+    getCartOfUser,
+    addToCart,
+    reduceInCart,
+    deleteFromCart } = require('../data_managers/cartManager')
 
 router.get('/by-user/:id', async function (req, res, next) {
     const user_id = req.params.id
@@ -15,8 +19,30 @@ router.get('/by-user/:id', async function (req, res, next) {
 
 router.post('/add-product', async function (req, res, next) {
     const { user_id, product_id, quantity } = req.body
-    try{
+    try {
         const updatedCart = await addToCart(user_id, product_id, quantity)
+        //res.sendStatus(updatedCart ? 201 :409 )
+        res.status(201).json(updatedCart)
+    } catch (err) {
+        res.status(500).json({ error: err })
+    }
+})
+
+router.post('/reduce-product', async function (req, res, next) {
+    const { user_id, product_id, quantity } = req.body
+    try {
+        const updatedCart = await reduceInCart(user_id, product_id, quantity)
+        //res.sendStatus(updatedCart ? 201 :409 )
+        res.status(201).json(updatedCart)
+    } catch (err) {
+        res.status(500).json({ error: err })
+    }
+})
+
+router.post('/delete-product', async function (req, res, next) {
+    const { user_id, product_id } = req.body
+    try {
+        const updatedCart = await deleteFromCart(user_id, product_id)
         //res.sendStatus(updatedCart ? 201 :409 )
         res.status(201).json(updatedCart)
     } catch (err) {
