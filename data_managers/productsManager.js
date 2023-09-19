@@ -87,7 +87,6 @@ async function getProductsWithIDs(IDs) {
                     resolve(results);
                 });
         })
-        console.log(results)
         return results;
     } catch (erorr) {
         throw erorr
