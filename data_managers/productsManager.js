@@ -71,8 +71,33 @@ async function getProductsOfCategory(categoriesID) {
     }
 }
 
+async function getProductsWithIDs(IDs) {
+    try {
+        const setOfIDs = IDs //format 1,2,5
+        const sqlQuery = `SELECT * FROM PRODUCTS WHERE id IN (${setOfIDs})`
+        const results = await new Promise((resolve, reject) => {
+            connection.query(
+                sqlQuery,
+                function (err, results, fields) {
+                    if (err) {
+                        console.error('Error fetching products:', err)
+                        reject(err)
+                        return
+                    }
+                    resolve(results);
+                });
+        })
+        console.log(results)
+        return results;
+    } catch (erorr) {
+        throw erorr
+    }
+}
+
+
 module.exports = {
     getProduct,
     getProducts,
+    getProductsWithIDs,
     getProductsOfCategory
 }
