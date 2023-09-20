@@ -93,10 +93,38 @@ async function getProductsWithIDs(IDs) {
     }
 }
 
+async function decreaseInStock(id, quanity){
+    try{
+        const sqlQuery = 
+        `UPDATE products
+        SET units_in_stock = CASE
+            WHEN units_in_stock >= ? THEN units_in_stock - ?
+            ELSE units_in_stock
+        END
+        WHERE id = ?`
+        const result = await new Promise((resolve, reject) => {
+            connection.query(
+                sqlQuery,
+                [quanity, quanity, id],
+                function (err, results, fields) {
+                    if (err) {
+                        console.error('Error fetching products:', err)
+                        reject(err)
+                        return
+                    }
+                    resolve(results)
+                })
+        })
+        return result
+    } catch (erorr) {
+        throw erorr
+    }
+}
 
 module.exports = {
     getProduct,
     getProducts,
     getProductsWithIDs,
-    getProductsOfCategory
+    getProductsOfCategory,
+    decreaseInStock
 }
