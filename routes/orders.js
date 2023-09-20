@@ -2,22 +2,22 @@ var express = require('express');
 var router = express.Router();
 
 
-const { addOrder } = require('../data_managers/ordersManager')
+const { addOrder, addOrderDetail } = require('../data_managers/ordersManager')
 const { decreaseInStock } = require('../data_managers/productsManager')
 
 router.post('/add', async function (req, res, next) {
   const {user_id, total_price, orderList} = req.body
   try {
     const order = await addOrder(user_id, total_price)
+    const order_id = order.insertId
     for (const item of orderList){
       const decrease = await decreaseInStock(item.id, item.quantity)
       if (decrease.changedRows === 1){
-        
+        const orderDetail = await addOrderDetail(order_id, item)
       }
-      console.log(decrease)
     }
 
-    res.status(201).json(order)
+    res.status(201).json({order_id: order_id})
 } catch (err) {
     res.status(500).json({ error: err })
 }

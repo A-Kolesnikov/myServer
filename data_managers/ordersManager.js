@@ -30,15 +30,16 @@ async function addOrder(user_id, total_price) {
     }
 }
 
-async function addOrderDetail (order_id, product_id, quantity, product_price, product_name) {
+async function addOrderDetail (order_id, item) {
+    //const {id, quantity, price, name} = item
     try{
         const sqlQuery = 
-        `INSERT INTO order_details (order_id,cproduct_id, quantity total_price, date)
-        VALUES (?, ?, NOW());`
+        `INSERT INTO order_details (order_id, product_id, quantity, product_price, product_name)
+        VALUES (?, ?, ?, ?, ?);`
         const result = await new Promise((resolve, reject) => {
             connection.query(
                 sqlQuery,
-                [user_id, total_price],
+                [order_id, item.id, item.quantity, item.price, item.name],
                 function (err, results) {
                     if (err) {
                         console.error(`error fetching cart:`, err)
