@@ -56,7 +56,57 @@ async function addOrderDetail (order_id, item) {
     }
 }
 
+async function getOrdersOfUser(user_id) {
+    try {
+        const sqlQuery = 
+        `SELECT * FROM orders WHERE user_id = ?;`
+        const result = await new Promise((resolve, reject) => {
+            connection.query(
+                sqlQuery,
+                [user_id],
+                function (err, results) {
+                    if (err) {
+                        console.error(`error fetching cart:`, err)
+                        reject(err)
+                        return
+                    }
+                    resolve(results)
+                }
+            )
+        })
+        return result
+    } catch (error) {
+        throw error
+    }
+}
+
+async function getOrderDetails(order_id) {
+    try {
+        const sqlQuery = 
+        `SELECT * FROM order_details WHERE order_id = ?;`
+        const result = await new Promise((resolve, reject) => {
+            connection.query(
+                sqlQuery,
+                [order_id],
+                function (err, results) {
+                    if (err) {
+                        console.error(`error fetching cart:`, err)
+                        reject(err)
+                        return
+                    }
+                    resolve(results)
+                }
+            )
+        })
+        return result
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     addOrder,
-    addOrderDetail
+    addOrderDetail,
+    getOrdersOfUser,
+    getOrderDetails
 }
