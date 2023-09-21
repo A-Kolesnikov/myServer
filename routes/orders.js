@@ -2,14 +2,13 @@ var express = require('express');
 var router = express.Router();
 
 
-const { addOrder, addOrderDetail } = require('../data_managers/ordersManager')
+const { addOrder, addOrderDetail, getOrdersOfUser, getOrderDetails } = require('../data_managers/ordersManager')
 const { decreaseInStock } = require('../data_managers/productsManager')
 const { deleteFromCart } = require('../data_managers/cartManager')
 
 router.post('/add', async function (req, res, next) {
   const {user_id, total_price, orderList} = req.body
   try {
-    console.log('I am here')
     const order = await addOrder(user_id, total_price)
     const order_id = order.insertId
     for (const item of orderList){
@@ -26,31 +25,22 @@ router.post('/add', async function (req, res, next) {
 }
 })
 
-
-
-
-
-
-/* GET orders listing. */
-/*const orders = [
-  {id:1, unit:'GPS-Receiver'},
-  {id:2, unit: 'Ananas'}
-]
-router.get('/', function(req, res, next) {
-  console.log("GOT YOUR REQUEST 1")
-  //res.send('respond with a resource - CHANGED TEXT');
-  res.json(orders)
-});
-
-router.get('/:orderId', (req, res) => {
-  console.log("GOT YOUR REQUEST 2")
-  const orderId = req.params.orderId
-  const order = orders.find(order => order.id == parseInt(orderId))
-  if(!order){
-    return res.json({message: 'No such order'})
-  }else{
-    res.json(order)
+router.get('/by-user/:id', async function (req, res, next) {
+  const user_id = req.params.id
+  try {
+    const result = []
+      const orders = await getOrdersOfUser(user_id)
+      if(orders && orders[0]){
+        for (const order of orders){
+          const itemList = await getOrderDetails(order.id)
+          order.itemList = [...itemList]
+          result.push(order)
+        }
+      }
+      res.status(200).json(result)
+  } catch (err) {
+      res.status(500).json({ error: err })
   }
-})*/
+})
 
 module.exports = router;
